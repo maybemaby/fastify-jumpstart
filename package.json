@@ -1,0 +1,40 @@
+{
+  "name": "fastify-prisma-template",
+  "version": "0.0.1",
+  "description": "Template for a fastify-prisma web API",
+  "main": "./src/server.ts",
+  "scripts": {
+    "dev": "dotenv -e .env -- ts-node ./src/server.ts",
+    "format": "prettier ./src -c",
+    "test": "dotenv -e .env.test -- tap src/**/*.test.ts --ts",
+    "test:only": "dotenv -e .env.test -- tap --files=src/**/*.test.ts --ts --only",
+    "test:routes": "dotenv -e .env.test -- tap --files=**/routes/**/*.test.ts --ts",
+    "test:w": "dotenv -e .env.test -- tap --ts -w",
+    "build": "tsc",
+    "start": "NODE_ENV=production node dist/server.js"
+  },
+  "author": "maybemaby",
+  "license": "MIT",
+  "dependencies": {
+    "@fastify/helmet": "^10.0.2",
+    "@fastify/sensible": "^5.1.1",
+    "@fastify/swagger": "^8.1.0",
+    "@fastify/type-provider-typebox": "^2.3.0",
+    "@sinclair/typebox": "^0.25.0",
+    "dotenv-cli": "^6.0.0",
+    "fastify": "^4.10.0",
+    "fastify-plugin": "^4.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "@types/tap": "^15.0.7",
+    "@typescript-eslint/eslint-plugin": "^5.42.1",
+    "@typescript-eslint/parser": "^5.42.1",
+    "eslint": "^8.27.0",
+    "pino-pretty": "^9.1.1",
+    "prettier": "^2.7.1",
+    "tap": "^16.3.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  }
+}
