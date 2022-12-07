@@ -23,7 +23,8 @@
     "@sinclair/typebox": "^0.25.0",
     "dotenv-cli": "^6.0.0",
     "fastify": "^4.10.0",
-    "fastify-plugin": "^4.4.0"
+    "fastify-plugin": "^4.4.0",
+    "prom-client": "^14.1.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.9",

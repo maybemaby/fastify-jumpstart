@@ -9,6 +9,8 @@ A starter kit template for Fastify Typescript REST APIs.
 - ESLint
 - Database Agnostic
 
+## Available Optional Plugins
+- Prometheus for monitoring
 
 ## Todo:
 - [ ] Auth

@@ -2,10 +2,15 @@ import helmet from "@fastify/helmet";
 import sensible from "@fastify/sensible";
 import { build } from "./app";
 import { config } from "./config/config";
+import prom from "./plugins/prom";
 
 const app = build({
   logger: config[process.env.NODE_ENV ?? "production"].logger,
 });
+
+// Uncomment for exposing prometheus metrics at /metrics endpoint
+// See plugins/prom.ts
+// app.register(prom);
 
 // Uses fastify helmet and sensible plugins as defaults
 app.register(helmet);
