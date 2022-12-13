@@ -1,8 +1,8 @@
 import helmet from "@fastify/helmet";
-import sensible from "@fastify/sensible";
 import { build } from "./app";
 import { config } from "./config/config";
 import prom from "./plugins/prom";
+import localAuth from "./plugins/localAuth";
 
 const app = build({
   logger: config[process.env.NODE_ENV ?? "production"].logger,
@@ -12,9 +12,26 @@ const app = build({
 // See plugins/prom.ts
 // app.register(prom);
 
+// Local auth JWT plugin. Uses email and password by default
+app.register(localAuth, {
+  // Manually configure jwt settings
+  // jwt: {
+  //   secret: process.env.JWT_SECRET ?? "secret-jwt-key",
+  //   sign: {
+  //     expiresIn: 3600,
+  //   },
+  // },
+  signUp(user) {
+    console.log(user);
+    return { id: "some-id" };
+  },
+  login(user) {
+    return { id: "user.id" };
+  },
+});
+
 // Uses fastify helmet and sensible plugins as defaults
 app.register(helmet);
-app.register(sensible);
 
 // Returns swagger spec JSON when not in production
 if (process.env.NODE_ENV !== "production") {

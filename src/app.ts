@@ -3,6 +3,7 @@ import swagger from "@fastify/swagger";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { apiRouter } from "./routes/api";
 import { healthRoute } from "./routes/health";
+import sensible from "@fastify/sensible";
 
 export function build(opts?: FastifyServerOptions) {
   const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
@@ -25,6 +26,7 @@ export function build(opts?: FastifyServerOptions) {
 
   app.register(apiRouter, { prefix: "/api" });
   app.register(healthRoute);
+  app.register(sensible);
 
   return app;
 }
