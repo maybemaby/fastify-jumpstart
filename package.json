@@ -31,7 +31,7 @@
   "devDependencies": {
     "@types/node": "^18.11.9",
     "@types/tap": "^15.0.7",
-    "@typescript-eslint/eslint-plugin": "^5.42.1",
+    "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@typescript-eslint/parser": "^5.46.1",
     "eslint": "^8.27.0",
     "pino-pretty": "^9.1.1",
