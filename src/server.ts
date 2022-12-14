@@ -21,12 +21,23 @@ app.register(localAuth, {
   //     expiresIn: 3600,
   //   },
   // },
-  signUp(user) {
-    console.log(user);
+  signUp(_user) {
+    // Enter some logic to process signups and return a UserType
     return { id: "some-id", provider: "email" };
   },
-  login(user) {
+  login(_user) {
+    // Enter some logic to process logins and return a UserType
     return { id: "user.id", provider: "email" };
+  },
+  logout(jti) {
+    // Enter some logic to blacklist the jti
+    console.log(jti, "Logged out");
+    return;
+  },
+  refresh(_jti: string): boolean {
+    // Enter some logic to verify a refresh token jti is valid, return true if valid
+    // A UUID is generated during signing to use as a jti
+    return true;
   },
 });
 

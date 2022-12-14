@@ -3,6 +3,7 @@ import { Static, Type } from "@sinclair/typebox";
 export const AuthSuccessResSchema = Type.Object({
   userId: Type.String(),
   accessToken: Type.String(),
+  refreshToken: Type.String(),
   provider: Type.String(),
 });
 

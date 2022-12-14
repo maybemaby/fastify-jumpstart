@@ -7,8 +7,15 @@ export interface PromPluginOptions {
 }
 
 export interface LocalAuthPluginOptions {
-  jwt?: FastifyJWTOptions;
+  accessJwt?: FastifyJWTOptions;
+  refreshJwt?: FastifyJWTOptions;
   path?: string;
+
   signUp(user: PostUser): UserType | Promise<UserType>;
+
   login(user: PostUser): (UserType | Promise<UserType>) | null;
+
+  logout(jti: string): void | Promise<void>;
+
+  refresh(jti: string): boolean | Promise<boolean>;
 }

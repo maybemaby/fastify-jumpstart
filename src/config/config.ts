@@ -29,6 +29,18 @@ export const config: Record<string, IConfig> = {
         },
       },
       level: "info",
+      transport: {
+        targets: [
+          {
+            target: "pino/file",
+            level: "info",
+            options: {
+              destination: `./logs/production.log`,
+              mkdir: true,
+            },
+          },
+        ],
+      },
     },
   },
   testing: { logger: false },

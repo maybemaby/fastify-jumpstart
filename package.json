@@ -10,9 +10,9 @@
     "test": "dotenv -e .env.test -- tap src/**/*.test.ts --ts",
     "test:only": "dotenv -e .env.test -- tap --files=src/**/*.test.ts --ts --only",
     "test:routes": "dotenv -e .env.test -- tap --files=**/routes/**/*.test.ts --ts",
-    "test:w": "dotenv -e .env.test -- tap --ts -w",
+    "test:w": "dotenv -e .env.test -- tap src/**/*.test.ts --ts -w",
     "build": "tsc",
-    "start": "NODE_ENV=production node dist/server.js"
+    "start": "dotenv -e .env -- node dist/server.js"
   },
   "author": "maybemaby",
   "license": "MIT",

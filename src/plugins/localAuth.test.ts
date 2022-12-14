@@ -11,6 +11,12 @@ const setupApp = (overrides?: Partial<Parameters<typeof localAuth>[1]>) => {
     login: (_user) => {
       return { id: "loggedIn", provider: "email" };
     },
+    logout(_jti: string): void | Promise<void> {
+      return;
+    },
+    refresh(_jti: string): boolean | Promise<boolean> {
+      return true;
+    },
     ...overrides,
   });
 
@@ -37,7 +43,7 @@ t.test("local auth plugin", (t) => {
 
     t.test("signup returns bad request on error", async (t) => {
       const app = setupApp({
-        signUp(user) {
+        signUp(_user) {
           throw new Error("test error");
         },
       });
@@ -51,7 +57,6 @@ t.test("local auth plugin", (t) => {
         },
       });
 
-      console.log(res.statusCode);
       t.ok(res.statusCode === 400);
     });
 
@@ -77,7 +82,7 @@ t.test("local auth plugin", (t) => {
 
     t.test("login returns unauthorized on err", async (t) => {
       const app = setupApp({
-        login(user) {
+        login(_user) {
           throw new Error("test error");
         },
       });
@@ -96,7 +101,7 @@ t.test("local auth plugin", (t) => {
 
     t.test("returns not found on null", async (t) => {
       const app = setupApp({
-        login(user) {
+        login(_user) {
           return null;
         },
       });
@@ -111,6 +116,63 @@ t.test("local auth plugin", (t) => {
       });
 
       t.ok(res.statusCode === 404);
+    });
+
+    t.end();
+  });
+
+  t.test("refresh", (t) => {
+    t.test("refresh success", async (t) => {
+      const app = setupApp();
+
+      const tokenRes = await app.inject({
+        method: "POST",
+        url: "/auth/login",
+        payload: {
+          email: "email@email.com",
+          password: "password@password.com",
+        },
+      });
+
+      const token = tokenRes.json<{ refreshToken: string }>();
+      const res = await app.inject({
+        method: "POST",
+        url: "/auth/refresh",
+        headers: {
+          Authorization: `Bearer ${token.refreshToken}`,
+        },
+      });
+
+      t.ok(res.statusCode === 200);
+    });
+
+    t.test("refresh fail", async (t) => {
+      const app = setupApp({
+        refresh(_jti: string): boolean | Promise<boolean> {
+          return false;
+        },
+      });
+
+      const tokenRes = await app.inject({
+        method: "POST",
+        url: "/auth/login",
+        payload: {
+          email: "email@email.com",
+          password: "password@password.com",
+        },
+      });
+
+      const token = tokenRes.json<{ refreshToken: string }>();
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/auth/refresh",
+        headers: {
+          Authorization: `Bearer ${token.refreshToken}`,
+        },
+      });
+
+      t.equal(res.statusCode, 401);
     });
 
     t.end();

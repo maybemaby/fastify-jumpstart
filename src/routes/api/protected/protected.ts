@@ -9,7 +9,7 @@ export const protectedRouter: FastifyPluginCallback = (
   const fastify = instance.withTypeProvider<TypeBoxTypeProvider>();
 
   fastify.addHook("onRequest", async (req, _reply) => {
-    await req.jwtVerify();
+    await req.accessVerify();
   });
 
   fastify.get("/", async (req, reply) => {

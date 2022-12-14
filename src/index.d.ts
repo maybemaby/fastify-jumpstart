@@ -5,11 +5,21 @@ declare module "fastify" {
     prom: typeof prom;
     promRegister: Registry;
   }
+
+  interface FastifyRequest {
+    accessVerify: FastifyRequest["jwtVerify"];
+    refreshVerify: FastifyRequest["jwtVerify"];
+  }
+
+  interface FastifyReply {
+    accessSign: FastifyReply["jwtSign"];
+    refreshSign: FastifyReply["jwtSign"];
+  }
 }
 
 declare module "@fastify/jwt" {
   interface FastifyJWT {
-    payload: { id: string }; // payload type is used for signing and verifying
+    payload: { id: string; provider: string }; // payload type is used for signing and verifying
     user: {
       id: string;
       provider: string;
