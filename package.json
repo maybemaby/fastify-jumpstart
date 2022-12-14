@@ -1,5 +1,5 @@
 {
-  "name": "fastify-prisma-template",
+  "name": "fastify-jumpstart",
   "version": "0.0.1",
   "description": "Template for a database agnostic fastify typescript web API including local JWT auth, OAS3, and testing.",
   "main": "./src/server.ts",

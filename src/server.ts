@@ -51,9 +51,12 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
+const parsedPort = parseInt(process.env.PORT ?? "5000");
+const PORT = Number.isNaN(parsedPort) ? 5000 : parsedPort;
+
 app.listen(
   {
-    port: 5000,
+    port: PORT,
   },
   (err, _address) => {
     if (err) {
