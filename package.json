@@ -1,7 +1,7 @@
 {
   "name": "fastify-prisma-template",
   "version": "0.0.1",
-  "description": "Template for a fastify-prisma web API",
+  "description": "Template for a database agnostic fastify typescript web API including local JWT auth, OAS3, and testing.",
   "main": "./src/server.ts",
   "types": "./src/index.d.ts",
   "scripts": {

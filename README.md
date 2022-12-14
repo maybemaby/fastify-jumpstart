@@ -96,7 +96,7 @@ app.register(localAuth, {
   //  ...
   // },
   // Select a different root path, defaults to /auth
-  // prefix: '/auth',
+  // path: '/auth',
   signUp(user) {
     // Enter some logic to process signups and return a UserType
     return { id: "some-id", provider: "email" };
@@ -114,6 +114,13 @@ app.register(localAuth, {
   },
 });
 ```
+
+### Defaults
+
+- Access Tokens expire in 24 hours.
+- Refresh Tokens expire in 30 days.
+- Jti is a uuid.
+- Users have an email and password.
 
 ### Protecting routes
 
@@ -142,4 +149,5 @@ declare module "@fastify/jwt" {
 ## Todo:
 
 - [x] Auth
+- [ ] Type enforce defining jti for custom jwt settings
 - [ ] API Versioning
