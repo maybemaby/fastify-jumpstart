@@ -1,11 +1,11 @@
 import { randomUUID } from "crypto";
 import { FastifyPluginCallback } from "fastify";
-import jwt, { UserType } from "@fastify/jwt";
 import fp from "fastify-plugin";
-import { LocalAuthPluginOptions } from "../types/types";
-import { PostUserSchema } from "../schema/user";
+import jwt, { UserType } from "@fastify/jwt";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
+import { PostUserSchema } from "../schema/user";
 import { AuthSuccessResSchema } from "../schema/auth";
+import type { LocalAuthPluginOptions } from "../types/types";
 
 const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
   instance,
@@ -32,7 +32,7 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
       secret: process.env.JWT_SECRET!,
       sign: {
         algorithm: "HS256",
-        expiresIn: 3600,
+        expiresIn: 3600, // 1 day
       },
       namespace: "access",
       jwtVerify: "accessVerify",
@@ -43,6 +43,7 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
   fastify.register(
     jwt,
     opts.refreshJwt ?? {
+      // Default Refresh JWT configs
       secret: process.env.REFRESH_SECRET!,
       sign: {
         algorithm: "HS256",
