@@ -1,6 +1,7 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyPluginCallback } from "fastify";
 import { placeholderRouter } from "./placeholder/placeholderRouter";
+import { protectedRouter } from "./protected/protected";
 
 // Root api router,
 export const apiRouter: FastifyPluginCallback = (fastify, opts, done) => {
@@ -28,6 +29,6 @@ export const apiRouter: FastifyPluginCallback = (fastify, opts, done) => {
   // Register any api routes here:
   // Delete this example
   fastify.register(placeholderRouter, { prefix: "/placeholder" });
-
+  fastify.register(protectedRouter, { prefix: "/protected" });
   done();
 };

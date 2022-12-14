@@ -5,11 +5,11 @@ import localAuth from "./localAuth";
 const setupApp = (overrides?: Partial<Parameters<typeof localAuth>[1]>) => {
   const app = build();
   app.register(localAuth, {
-    signUp: (user) => {
-      return { id: "signedup" };
+    signUp: (_user) => {
+      return { id: "signedup", provider: "email" };
     },
-    login: (user) => {
-      return { id: "loggedIn" };
+    login: (_user) => {
+      return { id: "loggedIn", provider: "email" };
     },
     ...overrides,
   });

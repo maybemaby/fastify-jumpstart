@@ -23,10 +23,10 @@ app.register(localAuth, {
   // },
   signUp(user) {
     console.log(user);
-    return { id: "some-id" };
+    return { id: "some-id", provider: "email" };
   },
   login(user) {
-    return { id: "user.id" };
+    return { id: "user.id", provider: "email" };
   },
 });
 

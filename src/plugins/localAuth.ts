@@ -4,7 +4,6 @@ import fp from "fastify-plugin";
 import { LocalAuthPluginOptions } from "../types/types";
 import { PostUserSchema } from "../schema/user";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
-import * as repl from "repl";
 import { AuthSuccessResSchema } from "../schema/auth";
 
 const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
@@ -55,6 +54,7 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
         return {
           accessToken: token,
           userId: user.id,
+          provider: "email",
         };
       } catch (e) {
         return reply.badRequest("Could not create user");
@@ -86,6 +86,7 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
         return {
           accessToken: token,
           userId: user.id,
+          provider: "email",
         };
       } catch (e) {
         return reply.unauthorized("Request unauthorized.");
