@@ -1,4 +1,5 @@
 import helmet from "@fastify/helmet";
+import cors from "@fastify/cors";
 import { build } from "./app";
 import { config } from "./config/config";
 import prom from "./plugins/prom";
@@ -41,6 +42,10 @@ app.register(localAuth, {
   },
 });
 
+app.register(cors, {
+  origin: "*",
+});
+
 // Uses fastify helmet and sensible plugins as defaults
 app.register(helmet);
 
@@ -53,15 +58,31 @@ if (process.env.NODE_ENV !== "production") {
 
 const parsedPort = parseInt(process.env.PORT ?? "5000");
 const PORT = Number.isNaN(parsedPort) ? 5000 : parsedPort;
+const HOST = process.env.HOST;
 
-app.listen(
-  {
-    port: PORT,
-  },
-  (err, _address) => {
-    if (err) {
-      app.log.error(err);
-      process.exit(1);
+if (HOST) {
+  app.listen(
+    {
+      port: PORT,
+      host: HOST,
+    },
+    (err, _address) => {
+      if (err) {
+        app.log.error(err);
+        process.exit(1);
+      }
     }
-  }
-);
+  );
+} else {
+  app.listen(
+    {
+      port: PORT,
+    },
+    (err, _address) => {
+      if (err) {
+        app.log.error(err);
+        process.exit(1);
+      }
+    }
+  );
+}

@@ -146,6 +146,13 @@ declare module "@fastify/jwt" {
 }
 ```
 
+## Docker
+
+```shell
+docker build --tag fastify-jumpstart .
+docker run -p 5000:5000 -d  --name jumpstart-app fastify-jumpstart  
+```
+
 ## Todo:
 
 - [x] Auth

@@ -17,6 +17,7 @@
   "author": "maybemaby",
   "license": "MIT",
   "dependencies": {
+    "@fastify/cors": "^8.2.0",
     "@fastify/helmet": "^10.0.2",
     "@fastify/jwt": "^6.5.0",
     "@fastify/sensible": "^5.1.1",
