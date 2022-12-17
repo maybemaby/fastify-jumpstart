@@ -134,13 +134,15 @@ t.test("local auth plugin", (t) => {
         },
       });
 
-      const token = tokenRes.json<{ refreshToken: string }>();
+      const cookie = tokenRes.cookies.pop() as {
+        name: "fastify-refresh";
+        value: string;
+      };
+
       const res = await app.inject({
         method: "POST",
         url: "/auth/refresh",
-        headers: {
-          Authorization: `Bearer ${token.refreshToken}`,
-        },
+        cookies: { "fastify-refresh": cookie.value },
       });
 
       t.ok(res.statusCode === 200);
@@ -153,23 +155,9 @@ t.test("local auth plugin", (t) => {
         },
       });
 
-      const tokenRes = await app.inject({
-        method: "POST",
-        url: "/auth/login",
-        payload: {
-          email: "email@email.com",
-          password: "password@password.com",
-        },
-      });
-
-      const token = tokenRes.json<{ refreshToken: string }>();
-
       const res = await app.inject({
         method: "POST",
         url: "/auth/refresh",
-        headers: {
-          Authorization: `Bearer ${token.refreshToken}`,
-        },
       });
 
       t.equal(res.statusCode, 401);

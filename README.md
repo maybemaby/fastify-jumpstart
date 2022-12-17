@@ -83,7 +83,8 @@ export const apiRouter: FastifyPluginCallback = (fastify, opts, done) => {
 ## Local Authorization Plugin
 
 A local authorization plugin is included in `src/plugins/localAuth`. It utilizes `fastify-jwt` to implement access and
-refresh tokens. Adds `/login`, `/signup`, `/logout`, and `/refresh` endpoints. To get started, you should define logic
+refresh tokens. Access tokens are validated in the `Authorization` header. Refresh tokens are stored in a `HttpOnly`
+cookie. Adds `/login`, `/signup`, `/logout`, and `/refresh` endpoints. To get started, you should define logic
 for the login, signup, logout, and refresh hooks.
 
 ```ts
@@ -97,6 +98,10 @@ app.register(localAuth, {
   // },
   // Select a different root path, defaults to /auth
   // path: '/auth',
+  // Override default cookie serialize options
+  // refreshCookie: {
+  //  ...
+  // },
   signUp(user) {
     // Enter some logic to process signups and return a UserType
     return { id: "some-id", provider: "email" };
@@ -106,7 +111,7 @@ app.register(localAuth, {
     return { id: "user.id", provider: "email" };
   },
   logout(jti) {
-    // Enter some logic to blacklist the jti
+    // Enter some logic if you want to blacklist the jti
   },
   refresh(_jti: string): boolean {
     // Enter some logic to verify a refresh token jti is valid, return true if valid
@@ -119,6 +124,7 @@ app.register(localAuth, {
 
 - Access Tokens expire in 24 hours.
 - Refresh Tokens expire in 30 days.
+- Refresh Tokens stored in a HttpOnly SameSite=Lax Cookie
 - Jti is a uuid.
 - Users have an email and password.
 
