@@ -222,7 +222,6 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
 
       return {
         accessToken: token,
-        refreshToken,
         userId: decoded.id,
         provider: decoded.provider,
       };
