@@ -22,6 +22,8 @@ app.register(localAuth, {
   //     expiresIn: 3600,
   //   },
   // },
+  // refreshCookie: {
+  // }
   signUp(_user) {
     // Enter some logic to process signups and return a UserType
     return { id: "some-id", provider: "email" };

@@ -25,6 +25,7 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
     httpOnly: true,
     sameSite: "lax",
     signed: true,
+    maxAge: 60 * 60 * 24 * 30,
   };
 
   // Make sure a proper secret is available
