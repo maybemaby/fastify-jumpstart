@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { FastifyPluginCallback } from "fastify";
 import fp from "fastify-plugin";
 import jwt, { UserType } from "@fastify/jwt";
+import cookie, { CookieSerializeOptions } from "@fastify/cookie";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { PostUserSchema } from "../schema/user";
 import { AuthSuccessResSchema } from "../schema/auth";
@@ -12,9 +13,19 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
   opts,
   done
 ) => {
+  const REFRESH_COOKIE_NAME = "fastify-refresh";
+  const env = process.env.NODE_ENV;
   const fastify = instance.withTypeProvider<TypeBoxTypeProvider>();
   // Allow path overrides
   const path = opts.path ?? "/auth";
+
+  const cookieOpts: CookieSerializeOptions = opts.refreshCookie ?? {
+    path: "/",
+    secure: env === "production",
+    httpOnly: true,
+    sameSite: "lax",
+    signed: true,
+  };
 
   // Make sure a proper secret is available
   if (
@@ -24,6 +35,15 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
   ) {
     throw new Error("Must provide a JWT secret");
   }
+
+  if (typeof process.env.COOKIE_SECRET !== "string") {
+    throw new Error("Must provide cookie secret");
+  }
+
+  fastify.register(cookie, {
+    hook: "onRequest",
+    secret: process.env.COOKIE_SECRET,
+  });
 
   fastify.register(
     jwt,
@@ -53,6 +73,11 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
       namespace: "refresh",
       jwtVerify: "refreshVerify",
       jwtSign: "refreshSign",
+      jwtDecode: "refreshDecode",
+      cookie: {
+        cookieName: REFRESH_COOKIE_NAME,
+        signed: true,
+      },
     }
   );
 
@@ -79,9 +104,10 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
             sub: user.id,
           },
         });
+
+        reply.setCookie(REFRESH_COOKIE_NAME, refreshToken, cookieOpts);
         return {
           accessToken: token,
-          refreshToken: refreshToken,
           userId: user.id,
           provider: "email",
         };
@@ -119,9 +145,10 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
           },
         });
 
+        reply.setCookie(REFRESH_COOKIE_NAME, refreshToken, cookieOpts);
+
         return {
           accessToken: token,
-          refreshToken,
           userId: user.id,
           provider: "email",
         };
@@ -132,12 +159,19 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
   );
 
   fastify.post(`${path}/logout`, {}, async (req, reply) => {
-    const { payload: decoded } = await req.refreshVerify<{
+    const { payload: decoded } = await req.refreshDecode<{
       payload: UserType & { exp: number; jti: string };
     }>({
-      complete: true,
+      decode: {
+        complete: true,
+      },
+      verify: {
+        complete: true,
+        onlyCookie: true,
+      },
     });
     await opts.logout(decoded.jti);
+    reply.clearCookie(REFRESH_COOKIE_NAME);
     reply.code(200);
     return {
       message: "Signed out",
@@ -158,6 +192,7 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
         payload: UserType & { exp: number; jti: string };
       }>({
         complete: true,
+        onlyCookie: true,
       });
 
       // Pass in the jti to a refresh token check
@@ -182,6 +217,9 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
           },
         }
       );
+
+      reply.setCookie(REFRESH_COOKIE_NAME, refreshToken, cookieOpts);
+
       return {
         accessToken: token,
         refreshToken,

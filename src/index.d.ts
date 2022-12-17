@@ -9,6 +9,7 @@ declare module "fastify" {
   interface FastifyRequest {
     accessVerify: FastifyRequest["jwtVerify"];
     refreshVerify: FastifyRequest["jwtVerify"];
+    refreshDecode: FastifyRequest["jwtDecode"];
   }
 
   interface FastifyReply {
