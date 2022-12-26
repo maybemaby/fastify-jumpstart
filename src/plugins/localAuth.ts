@@ -216,7 +216,7 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
       await req.accessVerify();
     } catch (e) {
       if (opts.autoRefresh) {
-        const { message } = await refresh(req, reply);
+        const { message } = await refresh(req, reply, true);
         if (message) {
           return reply.unauthorized(message);
         }
@@ -228,7 +228,8 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
 
   async function refresh(
     req: FastifyRequest,
-    reply: FastifyReply
+    reply: FastifyReply,
+    includeHeader = false
   ): Promise<RefreshReply> {
     const { payload: decoded } = await req.refreshVerify<{
       payload: UserType & { exp: number; jti: string };
@@ -268,7 +269,7 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
 
     reply.setCookie(REFRESH_COOKIE_NAME, refreshToken, cookieOpts);
     // Pass auto-refreshed token to header
-    reply.header("X-Access-Token", token);
+    if (includeHeader) reply.header("X-Access-Token", token);
 
     return {
       decoded,
