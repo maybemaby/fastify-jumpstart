@@ -152,6 +152,27 @@ declare module "@fastify/jwt" {
 }
 ```
 
+## Testing
+
+Test runner is node-tap.
+
+```shell
+# Run all tests
+npm run test
+# Run all tests in watch mode
+npm run test:w
+```
+
+```shell
+# Test routes only
+npm run test:routes
+```
+
+```shell
+# Run tests marked "only"
+npm run test:only
+```
+
 ## Docker
 
 ```shell
@@ -162,5 +183,6 @@ docker run -p 5000:5000 -d  --name jumpstart-app fastify-jumpstart
 ## Todo:
 
 - [x] Auth
+- [ ] Refresh access token automatically if it fails and refresh token is there
 - [ ] Type enforce defining jti for custom jwt settings
 - [ ] API Versioning
