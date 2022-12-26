@@ -9,9 +9,7 @@ export const protectedRouter: FastifyPluginCallback = (
   const fastify = instance.withTypeProvider<TypeBoxTypeProvider>();
 
   // Verifies an access token on each request after adding hook
-  fastify.addHook("onRequest", async (req, _reply) => {
-    await req.accessVerify();
-  });
+  fastify.addHook("onRequest", fastify.authorize);
 
   fastify.get("/", async (req, reply) => {
     reply.send(`hello ${req.user.id}`);

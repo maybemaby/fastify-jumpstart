@@ -4,6 +4,10 @@ declare module "fastify" {
   interface FastifyInstance {
     prom: typeof prom;
     promRegister: Registry;
+    authorize: (
+      req: FastifyRequest,
+      reply: FastifyReply
+    ) => void | Promise<void>;
   }
 
   interface FastifyRequest {

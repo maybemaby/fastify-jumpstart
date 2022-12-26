@@ -1,9 +1,11 @@
 import t from "tap";
 import { build } from "../../app";
+import { apiRouter } from "./index";
 
 t.test("api root", (t) => {
   t.test("Outputs version", async (t) => {
     const app = build();
+    app.register(apiRouter, { prefix: "/api" });
 
     const res = await app.inject({
       method: "GET",
