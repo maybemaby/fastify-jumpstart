@@ -1,12 +1,12 @@
 import { randomUUID } from "crypto";
-import { FastifyPluginCallback } from "fastify";
+import { FastifyPluginCallback, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 import jwt, { UserType } from "@fastify/jwt";
 import cookie, { CookieSerializeOptions } from "@fastify/cookie";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { PostUserSchema } from "../schema/user";
 import { AuthSuccessResSchema } from "../schema/auth";
-import type { LocalAuthPluginOptions } from "../types/types";
+import type { LocalAuthPluginOptions, RefreshReply } from "../types/types";
 
 const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
   instance,
@@ -81,6 +81,8 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
       },
     }
   );
+
+  fastify.decorate("authorize", authorize);
 
   fastify.post(
     `${path}/signup`,
@@ -189,45 +191,92 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
       },
     },
     async (req, reply) => {
-      const { payload: decoded } = await req.refreshVerify<{
-        payload: UserType & { exp: number; jti: string };
-      }>({
-        complete: true,
-        onlyCookie: true,
-      });
+      const { decoded, accessToken, message } = await refresh(req, reply);
 
-      // Pass in the jti to a refresh token check
-      if (!(await opts.refresh(decoded.jti))) {
-        return reply.unauthorized("Invalid refresh token");
+      if (message || !accessToken) {
+        return reply.unauthorized(message);
       }
 
-      const token = await reply.accessSign(
-        { id: decoded.id, provider: decoded.provider },
-        {
-          sign: {
-            sub: decoded.id,
-          },
-        }
-      );
-
-      const refreshToken = await reply.refreshSign(
-        { id: decoded.id, provider: decoded.provider },
-        {
-          sign: {
-            sub: decoded.id,
-          },
-        }
-      );
-
-      reply.setCookie(REFRESH_COOKIE_NAME, refreshToken, cookieOpts);
-
       return {
-        accessToken: token,
+        accessToken,
         userId: decoded.id,
         provider: decoded.provider,
       };
     }
   );
+
+  async function authorize(req: FastifyRequest, reply: FastifyReply) {
+    if (
+      !req.headers.authorization ||
+      req.headers.authorization.split(" ")[0] !== "Bearer"
+    ) {
+      return reply.unauthorized("Must include a Bearer authorization.");
+    }
+    try {
+      await req.accessVerify();
+    } catch (e) {
+      if (opts.autoRefresh) {
+        const { message } = await refresh(req, reply, true);
+        if (message) {
+          return reply.unauthorized(message);
+        }
+      } else {
+        return reply.unauthorized("Invalid access token");
+      }
+    }
+  }
+
+  async function refresh(
+    req: FastifyRequest,
+    reply: FastifyReply,
+    includeHeader = false
+  ): Promise<RefreshReply> {
+    const { payload: decoded } = await req.refreshVerify<{
+      payload: UserType & { exp: number; jti: string };
+    }>({
+      complete: true,
+      onlyCookie: true,
+    });
+
+    // Check refresh hook
+    if (!(await opts.refresh(decoded.jti))) {
+      return {
+        decoded,
+        accessToken: null,
+        message: "Unauthorized request",
+      };
+    }
+
+    // Sign new access token
+    const token = await reply.accessSign(
+      { id: decoded.id, provider: decoded.provider },
+      {
+        sign: {
+          sub: decoded.id,
+        },
+      }
+    );
+
+    // Sign new refresh token
+    const refreshToken = await reply.refreshSign(
+      { id: decoded.id, provider: decoded.provider },
+      {
+        sign: {
+          sub: decoded.id,
+        },
+      }
+    );
+
+    reply.setCookie(REFRESH_COOKIE_NAME, refreshToken, cookieOpts);
+    // Pass auto-refreshed token to header
+    if (includeHeader) reply.header("X-Access-Token", token);
+
+    return {
+      decoded,
+      accessToken: token,
+      message: undefined,
+    };
+  }
 
   done();
 };

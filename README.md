@@ -102,6 +102,9 @@ app.register(localAuth, {
   // refreshCookie: {
   //  ...
   // },
+  // Automatically refreshes access tokens in a x-access-token-header
+  // when an expired access token is used and a refresh token is in cookies.
+  // autoRefresh: false,
   signUp(user) {
     // Enter some logic to process signups and return a UserType
     return { id: "some-id", provider: "email" };
@@ -122,7 +125,7 @@ app.register(localAuth, {
 
 ### Defaults
 
-- Access Tokens expire in 24 hours.
+- Access Tokens expire in 24 hours and do not auto refresh.
 - Refresh Tokens expire in 30 days.
 - Refresh Tokens stored in a HttpOnly SameSite=Lax Cookie
 - Jti is a uuid.
@@ -131,9 +134,9 @@ app.register(localAuth, {
 ### Protecting routes
 
 ```ts
-fastify.addHook("onRequest", async (req, _reply) => {
-  await req.accessVerify();
-});
+import fastify from "fastify";
+
+fastify.addHook("onRequest", fastify.authorize);  
 ```
 
 ### Customizing the UserType
@@ -183,6 +186,6 @@ docker run -p 5000:5000 -d  --name jumpstart-app fastify-jumpstart
 ## Todo:
 
 - [x] Auth
-- [ ] Refresh access token automatically if it fails and refresh token is there
+- [x] Refresh access token automatically if it fails and refresh token is there
 - [ ] Type enforce defining jti for custom jwt settings
 - [ ] API Versioning

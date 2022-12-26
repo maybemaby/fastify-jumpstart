@@ -11,7 +11,7 @@ export interface LocalAuthPluginOptions {
   accessJwt?: FastifyJWTOptions;
   refreshJwt?: FastifyJWTOptions;
   path?: string;
-
+  autoRefresh?: boolean;
   refreshCookie?: CookieSerializeOptions;
 
   signUp(user: PostUser): UserType | Promise<UserType>;
@@ -22,3 +22,15 @@ export interface LocalAuthPluginOptions {
 
   refresh(jti: string): boolean | Promise<boolean>;
 }
+
+export type RefreshReply =
+  | {
+      message: undefined;
+      accessToken: string;
+      decoded: UserType & { exp: number; jti: string };
+    }
+  | {
+      message: string;
+      accessToken: null;
+      decoded: UserType & { exp: number; jti: string };
+    };

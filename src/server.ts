@@ -4,6 +4,7 @@ import { build } from "./app";
 import { config } from "./config/config";
 import prom from "./plugins/prom";
 import localAuth from "./plugins/localAuth";
+import { apiRouter } from "./routes/api";
 
 const app = build({
   logger: config[process.env.NODE_ENV ?? "production"].logger,
@@ -57,6 +58,8 @@ if (process.env.NODE_ENV !== "production") {
     return app.swagger();
   });
 }
+
+app.register(apiRouter, { prefix: "/api" });
 
 const parsedPort = parseInt(process.env.PORT ?? "5000");
 const PORT = Number.isNaN(parsedPort) ? 5000 : parsedPort;
