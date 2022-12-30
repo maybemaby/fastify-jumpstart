@@ -48,6 +48,7 @@ app.register(localAuth, {
 
 app.register(cors, {
   origin: "*",
+  credentials: true,
 });
 
 // Uses fastify helmet and sensible plugins as defaults

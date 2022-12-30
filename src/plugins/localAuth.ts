@@ -13,6 +13,7 @@ const localAuthPlugin: FastifyPluginCallback<LocalAuthPluginOptions> = (
   opts,
   done
 ) => {
+  // Change to your choice of cookie name for storing refresh tokens.
   const REFRESH_COOKIE_NAME = "fastify-refresh";
   const env = process.env.NODE_ENV;
   const fastify = instance.withTypeProvider<TypeBoxTypeProvider>();
