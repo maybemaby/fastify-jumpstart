@@ -5,9 +5,10 @@ import { config } from "./config/config";
 import prom from "./plugins/prom";
 import localAuth from "./plugins/localAuth";
 import { apiRouter } from "./routes/api";
+import { env } from "./config/env";
 
 const app = build({
-  logger: config[process.env.NODE_ENV ?? "production"].logger,
+  logger: config[env.NODE_ENV].logger,
 });
 
 // Uncomment for exposing prometheus metrics at /metrics endpoint
@@ -61,15 +62,11 @@ if (process.env.NODE_ENV !== "production") {
 
 app.register(apiRouter, { prefix: "/api" });
 
-const parsedPort = parseInt(process.env.PORT ?? "5000");
-const PORT = Number.isNaN(parsedPort) ? 5000 : parsedPort;
-const HOST = process.env.HOST;
-
-if (HOST) {
+if (env.HOST) {
   app.listen(
     {
-      port: PORT,
-      host: HOST,
+      port: env.PORT,
+      host: env.HOST,
     },
     (err, _address) => {
       if (err) {
@@ -81,7 +78,7 @@ if (HOST) {
 } else {
   app.listen(
     {
-      port: PORT,
+      port: env.PORT,
     },
     (err, _address) => {
       if (err) {
