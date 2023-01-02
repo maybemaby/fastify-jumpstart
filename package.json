@@ -22,7 +22,7 @@
     "@fastify/helmet": "^10.0.2",
     "@fastify/jwt": "^6.5.0",
     "@fastify/sensible": "^5.1.1",
-    "@fastify/swagger": "^8.1.0",
+    "@fastify/swagger": "^8.2.1",
     "@fastify/type-provider-typebox": "^2.3.0",
     "@sinclair/typebox": "^0.25.13",
     "dotenv-cli": "^6.0.0",
